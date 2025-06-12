@@ -75,6 +75,12 @@ document.addEventListener("DOMContentLoaded", () => {
                   return;
               }
 
+              // Show loading message in Panel B
+              const treeViewElementB = document.getElementById("treeViewB");
+              if (treeViewElementB) {
+                  treeViewElementB.innerHTML = '<div class="loading-message">Please wait, files are being processed...</div>';
+              }
+
               console.log("🔄 Sending input to backend:", inputBox);
 
               const response = await fetch("http://127.0.0.1:5000/process", {
@@ -83,13 +89,16 @@ document.addEventListener("DOMContentLoaded", () => {
                   body: JSON.stringify({ user_input: inputBox }),
               });
 
-            result = await response.json();
-            data_for_b = result;
-            const treeViewElementB = document.getElementById("treeViewB");
-                if (treeViewElementB) {
-                    createTreeViewB(data_for_b, treeViewElementB);
-                    console.log("✅ Response in createview:", data_for_b);
-                }
+              result = await response.json();
+              console.log("Raw response from backend:", result);
+              data_for_b = result;
+              
+              // Clear loading message and update with results
+              if (treeViewElementB) {
+                  treeViewElementB.innerHTML = '';  // Clear loading message
+                  createTreeViewB(data_for_b, treeViewElementB);
+                  console.log("✅ Response in createview:", data_for_b);
+              }
               
               console.log("✅ Response from backend:", data_for_b);
             //   alert("Received from backend: " + result.response);
@@ -265,50 +274,62 @@ const checkedItemsB = new Set();
 * @param {HTMLElement} parentElement - The parent element to append the tree structure
 */
 function createTreeViewB(data, parentElement) {
-  try {
-      for (const [category, items] of Object.entries(data)) {
-          let categoryTile = document.createElement("div");
-          categoryTile.classList.add("tile");
+    try {
+        console.log("Starting createTreeViewB with data:", JSON.stringify(data, null, 2));
+        // Clear existing content
+        parentElement.innerHTML = '';
+        
+        for (const [category, items] of Object.entries(data)) {
+            console.log(`Category: ${category}, Items:`, items);
+            let categoryTile = document.createElement("div");
+            categoryTile.classList.add("tile");
 
-          // Create checkbox for the category
-          let categoryCheckbox = document.createElement("input");
-          categoryCheckbox.type = "checkbox";
-          categoryCheckbox.addEventListener("change", () => toggleCheckedB(category, categoryCheckbox.checked));
+            // Create checkbox for the category
+            let categoryCheckbox = document.createElement("input");
+            categoryCheckbox.type = "checkbox";
+            categoryCheckbox.addEventListener("change", () => toggleCheckedB(category, categoryCheckbox.checked));
 
-          let categoryText = document.createElement("span");
-          categoryText.textContent = category;
+            let categoryText = document.createElement("span");
+            categoryText.textContent = category;
 
-          categoryTile.appendChild(categoryCheckbox);
-          categoryTile.appendChild(categoryText);
-          parentElement.appendChild(categoryTile);
+            categoryTile.appendChild(categoryCheckbox);
+            categoryTile.appendChild(categoryText);
+            parentElement.appendChild(categoryTile);
 
-          if (items.length > 0) {
-              let subList = document.createElement("div");
-              items.forEach(item => {
-                  let itemTile = document.createElement("div");
-                  itemTile.classList.add("tile", "sub-tile");
+            if (items && items.length > 0) {
+                let subList = document.createElement("div");
+                items.forEach(item => {
+                    console.log("Processing item:", item);
+                    let itemTile = document.createElement("div");
+                    itemTile.classList.add("tile", "sub-tile");
 
-                  // Create checkbox for each item
-                  let itemCheckbox = document.createElement("input");
-                  itemCheckbox.type = "checkbox";
-                  itemCheckbox.addEventListener("change", () => toggleCheckedB(item, itemCheckbox.checked));
+                    // Create checkbox for each item
+                    let itemCheckbox = document.createElement("input");
+                    itemCheckbox.type = "checkbox";
+                    itemCheckbox.addEventListener("change", () => toggleCheckedB(item, itemCheckbox.checked));
 
-                  let itemText = document.createElement("span");
-                //   itemText.textContent = item.split("/")[1];  // Display only item name
-                  itemText.textContent = item.split("\\")[1];  // Display only item name
+                    let itemText = document.createElement("span");
+                    // Check if item is a string or an object
+                    if (typeof item === 'string') {
+                        itemText.textContent = item.split('/').pop();  // Get the filename from path
+                    } else if (item && item.filename) {
+                        itemText.textContent = item.filename;
+                    } else {
+                        console.error("Invalid item format:", item);
+                        itemText.textContent = "Unknown file";
+                    }
 
-                  itemTile.appendChild(itemCheckbox);
-                  itemTile.appendChild(itemText);
-                  subList.appendChild(itemTile);
-              });
-              parentElement.appendChild(subList);
-          }
-
-      }
-  } catch (error) {
-      console.error("Error generating tree view for Panel B:", error);
-      alert("An error occurred while loading the data for Panel B.");
-  }
+                    itemTile.appendChild(itemCheckbox);
+                    itemTile.appendChild(itemText);
+                    subList.appendChild(itemTile);
+                });
+                parentElement.appendChild(subList);
+            }
+        }
+    } catch (error) {
+        console.error("Error generating tree view for Panel B:", error);
+        alert("An error occurred while loading the data for Panel B.");
+    }
 }
 
 function addPanelFooter(parentElement) {
@@ -396,5 +417,3 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("acceptBtn").addEventListener("click", onAcceptClick);
   document.getElementById("rejectBtn").addEventListener("click", onRejectClick);
 });
-
-

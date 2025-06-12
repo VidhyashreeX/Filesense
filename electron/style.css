@@ -297,6 +297,17 @@ body {
     opacity: 0.8;
 }
 
+.loading-message {
+    text-align: center;
+    padding: 20px;
+    font-size: 16px;
+    color: #666;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    margin: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
 /* Footer Section */
 .main-footer {
     position: fixed;

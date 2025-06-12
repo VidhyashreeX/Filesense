@@ -111,6 +111,12 @@ def classify_document(file_path):
         
         # Clean and classify the text
         clean_text = re.sub(r'\s+', ' ', text.strip())
+        
+        # Check if there's any meaningful text content
+        if not clean_text or len(clean_text.strip()) < 10:  # Minimum 10 characters to be considered valid
+            print(f"Warning: No meaningful text content found in {file_path}")
+            return "unclassified"
+            
         classification = classifier(clean_text, candidate_labels, multi_label=True)
         
         # Extract top category with high score

@@ -10,7 +10,7 @@ from flask_cors import CORS  # Allow cross-origin requests (from Electron app)
 import os
 import shutil
 import pandas as pd
-
+import json
 
 TEMP_DIR = "tmp"
 GROUPED_FILES = {}
@@ -48,7 +48,7 @@ def send_initial_struct():
     try: 
         data = request.json
         input_path = data.get("input_path", "")
-        print(f"📂 Browsing: {input_path}")
+        print(f" Browsing: {input_path}")
 
         #call get_dir_struct
         dir_structure = get_dir_structure(input_path)
@@ -64,7 +64,7 @@ def process_input():
         data = request.json
         user_input = data.get("user_input", "")
 
-        print(f"🖥️ Received input: {user_input}")
+        print(f" Received input: {user_input}")
         # calling filesense function
         global PERF_DATA
         retured_structure, PERF_DATA = filesense(user_input)
@@ -72,18 +72,29 @@ def process_input():
         GROUPED_FILES = retured_structure
         print(f"Grouped files :{GROUPED_FILES}")
         data_for_b = {}
+        print("\nProcessing returned structure:")
         for label, file_tup in retured_structure.items():
+            print(f"\nCategory: {label}")
             for ini_p, new_p in file_tup:
-                print( f" in app.py {ini_p} -> {new_p}, {label}")
+                print(f"Processing file: {ini_p} -> {new_p}")
                 if label not in data_for_b:
                     data_for_b[label] = []
-                data_for_b[label].append(new_p)        
+                # Get the original file name from the initial path
+                original_filename = os.path.basename(ini_p)
+                print(f"Original filename extracted: {original_filename}")
+                file_obj = {
+                    "original_path": ini_p,
+                    "new_path": new_p,
+                    "filename": original_filename
+                }
+                print(f"Created file object: {file_obj}")
+                data_for_b[label].append(file_obj)
 
-        print(f"Returned structure: {data_for_b}")      
-
+        print(f"\nFinal data structure being sent to frontend:")
+        print(json.dumps(data_for_b, indent=2))
         return jsonify(data_for_b)
     except Exception as e:
-        print(f"❌ Error in processing: {e}")
+        print(f" Error in processing: {e}")
         return jsonify({"error": "Server error"}), 500
     
 @app.route("/accept-changes", methods=['POST'])    
