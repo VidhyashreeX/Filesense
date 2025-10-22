@@ -1,26 +1,72 @@
-# FileSense
-An AI powered files reorganization tool that just makes sense!
 
 
-## To run:
-- step 1: Craete a virtual environment for your os, activate it and install libraries using the requiremnts.txt
-- step 2: Start the electron app using npm start inside the elctron folder # should still add code to run from other paths
+# FileSense – Intelligent File Management of files through content analysis
 
-## use Your theme 
-There are 4 stylesheets provided, use the one you like by replacing the base sheet in ``` index.html```
+FileSense is a desktop-based application that intelligently analyzes and organizes files based on their content. Leveraging modern AI technologies, including large language models (LLMs) and multimodal models, it classifies both text and image files to reduce digital clutter and improve productivity. The system offers a seamless user experience with a Python + Flask backend and Electron frontend.
 
-## TODO
-1. Make draggable tiles - HP - Dropped
-2. Connect the front end to back end -HP - Done
-    - process button to trigger filesene
-    - accept button to trigger json to backend and write 
-    - reject button on click behaviour - reset most likely
-3. Add tags and summary panel - HP - Next roll
-4. Add AI search feature based on tags - provide it in file or somewhere... LP - Next roll
+---
 
-HP = high priority, LP = low priority
+## Features
 
-Update with DONE. 
+- **Content-Aware Classification**: Automatically categorizes files using AI models like Qwen2, CLIP, and BART.
+- **Supports Multiple Formats**: Handles text documents (.txt, .pdf, .docx) and images (.jpg, .png, etc.).
+- **Zero-Shot Classification**: No prior training needed for new or unseen files.
+- **User Control**: Dry-run mode allows users to review AI-suggested organization before applying changes.
+- **Desktop-Friendly Interface**: Built with Electron for a responsive and intuitive desktop experience.
+- **Privacy-Safe**: All file processing happens locally with no cloud dependency.
 
-in windows:
-powershell: Set-ExecutionPolicy RemoteSigned -Scope Process
+
+---
+
+## Tech Stack
+
+- **Backend**: Python, Flask
+- **Frontend**: Electron.js
+- **AI Models**: Qwen2 LLM, CLIP, BART
+- **Other Tools**: Zero-shot classification, semantic analysis
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.8+
+- Node.js 18+
+- Electron 25+
+- Required Python packages listed in `requirements.txt`
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/VidhyashreeX/Filesense.git
+cd Filesense
+```
+
+2. Install backend dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+3. Install frontend dependencies:
+```bash
+npm install
+```
+
+4. Start the application:
+```bash
+npm start
+```
+
+---
+
+## Usage
+
+1. Open FileSense on your desktop.
+2. Add the folder or files you want to organize.
+3. Choose to run the AI-based analysis.
+4. Review the suggested file organization in dry-run mode.
+5. Accept to apply changes, and FileSense will reorganize files into content-aware folders.
+
+---
